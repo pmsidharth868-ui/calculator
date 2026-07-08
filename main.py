@@ -37,7 +37,6 @@ GRP4_PARAMS ={
     "MSP06": {"rebate_1": 0.0899, "rebate_2": 0.0499, "rebate_3": 0.0099, "od_rate": 0.0301, "od_inc_days": 270},
 }
 
-# Standardized fallback normalization for rates dictionary setup (Updated to include both GRP3 and GRP4)
 SCHEME_RATES = {k.strip().upper(): {"int_rate": 0.20, "sc_rate": 0.0099} for k in list(GRP3_PARAMS.keys()) + list(GRP4_PARAMS.keys())}
 
 class RowData(BaseModel):
@@ -201,6 +200,9 @@ def calculate_pledge_values(scheme, pledge_value, dates_input, add_charges_input
                 re_val += V
                 total_od = 0
                 
+            if total_od > 0:
+                re_val = 0
+
             accumulated_rebate += re_val
 
             current_add_charge = add_charges[i]
@@ -348,6 +350,9 @@ def calculate_pledge_values(scheme, pledge_value, dates_input, add_charges_input
                 re_val += V
                 total_od = 0
                 
+            if total_od > 0:
+                re_val = 0
+
             accumulated_rebate += re_val
 
             current_add_charge = add_charges[i]
