@@ -171,13 +171,14 @@ def calculate_pledge_values(scheme, pledge_value, dates_input, add_charges_input
             else:
                 remaining_days = diff
                 running_principal = current_principal
-                split_index = 0
+                
+                # FIX: Decide standard rate based on total days instead of progressive slabs
+                applicable_rebate_rate = re_rate_1 if diff <= 30 else re_rate_2
 
                 while remaining_days > 0:
                     days_to_process = min(remaining_days, 30)
                     split_int = (running_principal * int_rate * days_to_process) / 360.0
                    
-                    applicable_rebate_rate = re_rate_1 if split_index == 0 else re_rate_2
                     split_rebate = (running_principal * applicable_rebate_rate * days_to_process) / 360.0
 
                     total_int_unrounded += split_int
@@ -185,7 +186,6 @@ def calculate_pledge_values(scheme, pledge_value, dates_input, add_charges_input
 
                     running_principal += split_int
                     remaining_days -= days_to_process
-                    split_index += 1
 
             total_int = round(total_int_unrounded)
             total_sc = round(total_sc_unrounded)
@@ -315,19 +315,19 @@ def calculate_pledge_values(scheme, pledge_value, dates_input, add_charges_input
             else:
                 remaining_days = diff
                 running_principal = current_principal
-                split_index = 0
+                
+                # FIX: Decide standard rate based on total days instead of progressive slabs
+                if diff <= 30:
+                    applicable_rebate_rate = re_rate_1
+                elif diff <= 60:
+                    applicable_rebate_rate = re_rate_2
+                else:
+                    applicable_rebate_rate = re_rate_3
 
                 while remaining_days > 0:
                     days_to_process = min(remaining_days, 30)
                     split_int = (running_principal * int_rate * days_to_process) / 360.0
                    
-                    if split_index == 0:
-                        applicable_rebate_rate = re_rate_1
-                    elif split_index == 1:
-                        applicable_rebate_rate = re_rate_2
-                    else:
-                        applicable_rebate_rate = re_rate_3
-
                     split_rebate = (running_principal * applicable_rebate_rate * days_to_process) / 360.0
 
                     total_int_unrounded += split_int
@@ -335,7 +335,6 @@ def calculate_pledge_values(scheme, pledge_value, dates_input, add_charges_input
 
                     running_principal += split_int
                     remaining_days -= days_to_process
-                    split_index += 1
 
             total_int = round(total_int_unrounded)
             total_sc = round(total_sc_unrounded)
